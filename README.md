@@ -9,8 +9,8 @@ The original problem was basically to code a system that efficiently managed fou
 # Assumptions
 I assume:
 
-*The number of elevators can vary.
-*Each elevator can hold ten passengers, regardless of weight.
-*Each elevator moves at the same speed.
-*It takes just as much energy to move an elevator up as it does to move it down.
-*We want to minimize both energy spent and time it takes for a person to arrive at their destination.
+* The number of elevators can vary.
+* Each elevator can hold ten passengers, regardless of weight.
+* Each elevator moves at the same speed.
+* It takes just as much energy to move an elevator up as it does to move it down.
+* We want to minimize both energy spent and time it takes for a person to arrive at their destination.
