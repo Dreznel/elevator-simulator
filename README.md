@@ -14,3 +14,7 @@ I assume:
 * Each elevator moves at the same speed.
 * It takes just as much energy to move an elevator up as it does to move it down.
 * We want to minimize both energy spent and time it takes for a person to arrive at their destination.
+
+# Notes
+
+I am not doing anything particularly elegant with branching on this project, so I plan to check in mostly to dev unless I'm experimenting with something I don't think will work. That being said, I'll push working solutions to master.
