@@ -3,7 +3,6 @@ package operation;
 import elevator.Elevator;
 import elevator.ElevatorCall;
 
-import java.util.Dictionary;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -24,13 +23,14 @@ public class ElevatorManager {
             elevators.put(name, e);
         }
 
+        costCalculator = new TimeToBoardCostCalculator();
         pendingCalls = new LinkedList<ElevatorCall>();
     }
 
     //Method should receive a call and either assign it to an elevator or kick off the process
     //that assigns it to an elevator.
     public void processElevatorCall(ElevatorCall call) {
-        Elevator selectedElevator = getBestElevator(call);
+        Elevator selectedElevator = getCheapestElevator(call);
 
         //Do nothing and add to pending calls queue if no elevators are available.
         if(selectedElevator == null) {
@@ -42,7 +42,7 @@ public class ElevatorManager {
         selectedElevator.addStop(call.getDestinationFloor());
     }
 
-    private Elevator getBestElevator(ElevatorCall call) {
+    private Elevator getCheapestElevator(ElevatorCall call) {
         Cost currentCost;
         Cost lowestCost = null;
         Elevator selectedElevator = null;

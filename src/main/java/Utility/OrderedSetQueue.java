@@ -36,6 +36,11 @@ public class OrderedSetQueue {
         return peek() != null;
     }
 
+    //Purely adding because I want to use this to practice stream api. This is not good design.
+    public TreeSet<Integer> getSetForStreamApi() {
+        return set;
+    }
+
     public void setFrontOfQueueToHighest() {
         this.frontOfQueueIsHighestValue = true;
     }

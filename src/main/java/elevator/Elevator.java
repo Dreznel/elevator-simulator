@@ -88,6 +88,16 @@ public class Elevator implements Actionable {
         }
     }
 
+    //Not a really good way to do this, but I wanted to practice stream api.
+    public int getStopsBeforeFloor(int floor) {
+        if(this.getDirection() == DOWN) {
+            return this.stops.getSetForStreamApi().stream().filter(x -> x > floor).toArray().length;
+        } else {
+            //For up OR stopped.
+            return this.stops.getSetForStreamApi().stream().filter(x -> x < floor).toArray().length;
+        }
+    }
+
     public boolean isIdle() {
         return stops.peek() != null;
     }
@@ -143,6 +153,7 @@ public class Elevator implements Actionable {
         } else if(getDirection() == DOWN) {
             currentFloor--;
         }
+        System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
 
 
