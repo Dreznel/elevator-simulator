@@ -1,12 +1,14 @@
 package elevator;
 
+import java.util.UUID;
+
 public class Passenger {
-    public String name;
-    public int startingFloor;
-    public int destinationFloor;
+    private String name;
+    private int startingFloor;
+    private int destinationFloor;
 
     public Passenger(int startingFloor, int destinationFloor) {
-        this.name = "Employee " + Long.toString(System.currentTimeMillis());
+        this.name = "Employee " + UUID.randomUUID().toString();;
     }
 
     public boolean isDeparting(int currentFloor) {

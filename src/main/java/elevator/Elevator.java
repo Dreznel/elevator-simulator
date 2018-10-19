@@ -1,10 +1,10 @@
 package elevator;
 
+import Utility.OrderedSetQueue;
 import operation.ElevatorManager;
 import simulation.Actionable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static elevator.Direction.DOWN;
 import static elevator.Direction.UP;
@@ -19,7 +19,7 @@ public class Elevator implements Actionable {
     private List<Passenger> passengers;
 
     private int currentFloor;
-    private List<Integer> stops;
+    private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
     private int nextStop;
 
     private boolean doorsOpen;
@@ -31,7 +31,8 @@ public class Elevator implements Actionable {
         passengers = new ArrayList<Passenger>();
 
         currentFloor = 15; //Assume a thirty-floor building.
-        stops = new ArrayList<Integer>();
+        stops = new OrderedSetQueue();
+        stops.setFrontOfQueueToHighest();
         nextStop = 0;
 
         doorsOpen = false;
@@ -39,6 +40,41 @@ public class Elevator implements Actionable {
 
     public String getElevatorId() {
         return elevatorId;
+    }
+
+    @Override
+    public boolean doNextAction() {
+        if(isIdle()) {
+            return false;
+        }
+
+        if(getDirection() == STOPPED) {
+            dropOffPassengers();
+            //TODO: Add passengers -- but how do I pass in the argument?
+            updateStops();
+        } else {
+            moveElevator();
+        }
+        return true; //I may take out the boolean return, it could be helpful for exception handling/fault-tolerance, though.
+    }
+
+    @Override
+    public boolean setNextAction() {
+        return false;
+    }
+
+    //This needs to be fixed but we'll get there.
+    public void addStop(int stop) {
+        if(stop > currentFloor) {
+            stops.setFrontOfQueueToLowest();
+        } else  if(stop < currentFloor){
+            stops.setFrontOfQueueToHighest();
+        }
+        stops.insert(stop);
+    }
+
+    public boolean stoppingAt(int stop) {
+        return stops.contains(stop);
     }
 
     public Direction getDirection() {
@@ -49,6 +85,10 @@ public class Elevator implements Actionable {
         } else {
             return STOPPED;
         }
+    }
+
+    public boolean isIdle() {
+        return stops.peek() != null;
     }
 
     public int getCurrentCapacity() {
@@ -63,26 +103,9 @@ public class Elevator implements Actionable {
         return currentFloor;
     }
 
-    /*
-    public void openDoors() {
-        this.doorsOpen = true;
-    }
-
-    public void closeDoors() {
-        this.doorsOpen = false;
-    }
-    */
-
-    public void moveElevator() {
-        if(getDirection() == UP) {
-            currentFloor++;
-        } else if(getDirection() == DOWN) {
-            currentFloor--;
-        }
-    }
 
     //TODO: Try to do this with lambdas. Also, fix this inefficient mess.
-    public void dropOffPassengers() {
+    private void dropOffPassengers() {
         List<Passenger> remainingPassengers = new ArrayList<Passenger>();
         for(Passenger passenger : passengers) {
             if( ! passenger.isDeparting(this.currentFloor)) {
@@ -92,31 +115,35 @@ public class Elevator implements Actionable {
         this.passengers = remainingPassengers;
     }
 
+    /*
     //Adds members of newPassengers into passengerList and returns those who would not fit.
-    public List<Passenger> addPassengers(List<Passenger> newPassengers) {
+    private List<Passenger> addPassengers(List<Passenger> newPassengers) {
         for(int i=0; i<newPassengers.size(); i++) {
             if(getCurrentCapacity() < maxCapacity) {
-                this.passengers.add(newPassengers.get(i));
+                this.passengers.insert(newPassengers.get(i));
             } else {
                 return newPassengers.subList(i, newPassengers.size());
             }
         }
         return null;
     }
+    */
 
-    @Override
-    public boolean doNextAction() {
-        if(getDirection() == STOPPED) {
-            dropOffPassengers();
-            //TODO: Add passengers -- but how do I pass in the argument?
-        } else {
-            moveElevator();
+    private void updateStops() {
+        if(stops.peek() == currentFloor) {
+            stops.pop();
+            nextStop = isIdle() ? 0 : stops.peek();
         }
-        return true; //I may take out the boolean return, it could be helpful for exception handling/fault-tolerance, though.
     }
 
-    @Override
-    public boolean setNextAction() {
-        return false;
+    private void moveElevator() {
+        if(getDirection() == UP) {
+            currentFloor++;
+        } else if(getDirection() == DOWN) {
+            currentFloor--;
+        }
     }
+
+
+
 }
