@@ -1,5 +1,8 @@
 package operation;
 
+import elevator.Direction;
+import elevator.Elevator;
+
 public interface CostCalculator {
-    public int getCostToStopAtFloor(int floor);
+    public Cost getCostToStopAtFloor(Elevator e, int callingFloor, Direction direction);
 }

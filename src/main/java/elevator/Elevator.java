@@ -64,6 +64,7 @@ public class Elevator implements Actionable {
     }
 
     //This needs to be fixed but we'll get there.
+    //As it stands, the elevator can't be assigned stops that aren't in line with it's current direction.
     public void addStop(int stop) {
         if(stop > currentFloor) {
             stops.setFrontOfQueueToLowest();

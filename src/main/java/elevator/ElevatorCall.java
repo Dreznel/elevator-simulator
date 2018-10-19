@@ -16,6 +16,14 @@ public class ElevatorCall {
     //    passenger = new Passenger(callingFloor, destinationFloor);
     }
 
+    public ElevatorCall(int start, int stop) throws Exception {
+        if(start == stop) {
+            throw new Exception("Elevator call cannot be made to current floor.");
+        }
+        callingFloor = start;
+        destinationFloor = stop;
+    }
+
     public boolean canCombine(ElevatorCall otherCall) {
         return this.callingFloor == otherCall.callingFloor && this.getDirection() == otherCall.getDirection();
     }
