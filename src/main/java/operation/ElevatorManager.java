@@ -1,5 +1,7 @@
 package operation;
 
+import contracts.Cost;
+import contracts.CostCalculator;
 import elevator.Elevator;
 import elevator.ElevatorCall;
 
@@ -60,6 +62,4 @@ public class ElevatorManager {
         }
         return selectedElevator;
     }
-
-
 }

@@ -2,7 +2,8 @@ package elevator;
 
 import Utility.OrderedSetQueue;
 import operation.ElevatorManager;
-import simulation.Actionable;
+import contracts.Actionable;
+import passenger.Passenger;
 
 import java.util.*;
 

@@ -1,5 +1,7 @@
 package simulation;
 
+import contracts.Actionable;
+
 import java.util.List;
 
 public class Timeline {

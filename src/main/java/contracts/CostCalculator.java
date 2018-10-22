@@ -1,5 +1,6 @@
-package operation;
+package contracts;
 
+import contracts.Cost;
 import elevator.Direction;
 import elevator.Elevator;
 

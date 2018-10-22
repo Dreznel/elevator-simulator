@@ -1,5 +1,7 @@
 package operation;
 
+import contracts.Cost;
+
 public class CostImpl implements Cost {
 
     private int score;

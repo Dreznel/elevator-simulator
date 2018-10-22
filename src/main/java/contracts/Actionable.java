@@ -1,4 +1,4 @@
-package simulation;
+package contracts;
 
 public interface Actionable {
     public boolean doNextAction();
