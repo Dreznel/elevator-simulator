@@ -115,6 +115,17 @@ public class Elevator implements Actionable {
         return currentFloor;
     }
 
+    public boolean boardPassenger(Passenger p) {
+        if(this.getCurrentCapacity() < this.maxCapacity) {
+            passengers.add(p);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean departPassenger(Passenger p) {
+        return passengers.remove(p);
+    }
 
     //TODO: Try to do this with lambdas. Also, fix this inefficient mess.
     private void dropOffPassengers() {
