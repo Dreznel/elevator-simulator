@@ -1,4 +1,4 @@
-package elevator;
+package contracts;
 
 import passenger.Passenger;
 

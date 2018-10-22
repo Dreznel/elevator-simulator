@@ -20,6 +20,10 @@ public class OrderedSetQueue {
     }
 
     public Integer pop() {
+        if(set.isEmpty()) {
+            return null;
+        }
+
         Integer returnValue;
         returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
         set.remove(returnValue);
@@ -27,6 +31,10 @@ public class OrderedSetQueue {
     }
 
     public Integer peek() {
+        if(set.isEmpty()) {
+            return null;
+        }
+
         Integer returnValue;
         returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
         return returnValue;

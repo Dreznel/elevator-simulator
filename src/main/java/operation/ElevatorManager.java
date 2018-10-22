@@ -4,7 +4,9 @@ import contracts.Cost;
 import contracts.CostCalculator;
 import elevator.Elevator;
 import elevator.ElevatorCall;
+import passenger.Passenger;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -15,8 +17,11 @@ public class ElevatorManager {
     private Map<String, Elevator> elevators;
     private CostCalculator costCalculator;
     private Queue<ElevatorCall> pendingCalls;
+    private Queue<Passenger> pendingPassengers;
 
     public ElevatorManager() {
+
+        elevators = new HashMap<String, Elevator>();
 
         //Make four elevators.
         for(int i=1; i<=4; i++) {
@@ -27,21 +32,23 @@ public class ElevatorManager {
 
         costCalculator = new TimeToBoardCostCalculator();
         pendingCalls = new LinkedList<ElevatorCall>();
+        pendingPassengers = new LinkedList<Passenger>();
     }
 
-    //Method should receive a call and either assign it to an elevator or kick off the process
-    //that assigns it to an elevator.
-    public void processElevatorCall(ElevatorCall call) {
-        Elevator selectedElevator = getCheapestElevator(call);
+    //Method should receive a passenger and assign that passenger an elevator if possible.
+    //Method also gives the elevator the necessary information to pick up that passenger.
+    public void processElevatorCall(Passenger p) {
+        Elevator selectedElevator = getCheapestElevator(p.getElevatorCall());
 
         //Do nothing and add to pending calls queue if no elevators are available.
         if(selectedElevator == null) {
-            pendingCalls.add(call);
+            pendingPassengers.add(p);
             return;
         }
 
-        selectedElevator.addStop(call.getCallingFloor());
-        selectedElevator.addStop(call.getDestinationFloor());
+        selectedElevator.addStop(p.getElevatorCall().getCallingFloor());
+        selectedElevator.addStop(p.getElevatorCall().getDestinationFloor());
+        p.assignElevator(selectedElevator);
     }
 
     private Elevator getCheapestElevator(ElevatorCall call) {
@@ -62,4 +69,20 @@ public class ElevatorManager {
         }
         return selectedElevator;
     }
+/*
+    //Method should receive a call and either assign it to an elevator or kick off the process
+    //that assigns it to an elevator.
+    public void processElevatorCall(ElevatorCall call) {
+        Elevator selectedElevator = getCheapestElevator(call);
+
+        //Do nothing and add to pending calls queue if no elevators are available.
+        if(selectedElevator == null) {
+            pendingCalls.add(call);
+            return;
+        }
+
+        selectedElevator.addStop(call.getCallingFloor());
+        selectedElevator.addStop(call.getDestinationFloor());
+    }
+*/
 }

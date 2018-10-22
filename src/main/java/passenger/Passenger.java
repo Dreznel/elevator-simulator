@@ -4,6 +4,7 @@ import contracts.Actionable;
 import elevator.Direction;
 import elevator.Elevator;
 import elevator.ElevatorCall;
+import elevator.ElevatorSystemImpl;
 
 import java.util.UUID;
 
@@ -14,20 +15,28 @@ public class Passenger implements Actionable {
     private boolean isBoarded;
     private boolean wasSkipped;
 
+    public Passenger(int startingFloor, int destinationFloor) throws Exception {
+        this.name = "Employee " + UUID.randomUUID().toString();;
+        this.elevatorCall = new ElevatorCall(startingFloor, destinationFloor);
+        isBoarded = false;
+        wasSkipped = false;
+    }
+
     //private int startingFloor;
     //private int destinationFloor;
     @Override
     public boolean doNextAction() {
-        if(isBoarded) {
-            if(isDeparting()) {
+        if(assignedElevator == null || wasSkipped) {
+            ElevatorSystemImpl.getInstance().transportPassenger(this);
+            wasSkipped = false;
+        } else if(isBoarded && isDeparting()) {
                 assignedElevator.departPassenger(this);
-            }
-        } else {
-            if(isElevatorHere()) {
+                System.out.println("Passenger " + name + " has arrived.");
+        } else if(isElevatorHere()) {
                 isBoarded = assignedElevator.boardPassenger(this);
                 wasSkipped = !isBoarded;
-            }
         }
+
         return true;
     }
 
@@ -57,13 +66,6 @@ public class Passenger implements Actionable {
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
-    }
-
-    public Passenger(int startingFloor, int destinationFloor) throws Exception {
-        this.name = "Employee " + UUID.randomUUID().toString();;
-        this.elevatorCall = new ElevatorCall(startingFloor, destinationFloor);
-        isBoarded = false;
-        wasSkipped = false;
     }
 
     public void assignElevator(Elevator e) {
