@@ -14,7 +14,6 @@ import static elevator.Direction.STOPPED;
 public class Elevator implements Actionable {
 
     private String elevatorId;
-    private ElevatorManager manager;
 
     private int maxCapacity;
     private List<Passenger> passengers;
@@ -34,7 +33,7 @@ public class Elevator implements Actionable {
         currentFloor = 15; //Assume a thirty-floor building.
         stops = new OrderedSetQueue();
         stops.setFrontOfQueueToHighest();
-        nextStop = 0;
+        nextStop = -1;
 
         doorsOpen = false;
     }
@@ -51,7 +50,7 @@ public class Elevator implements Actionable {
 
         if(getDirection() == STOPPED) {
             //dropOffPassengers();
-            //TODO: Add passengers -- but how do I pass in the argument?
+            //addPassengers();
             updateStops();
         } else {
             moveElevator();
@@ -65,20 +64,42 @@ public class Elevator implements Actionable {
         return false;
     }
 
-    //This needs to be fixed but we'll get there.
-    //As it stands, the elevator can't be assigned stops that aren't in line with it's current direction.
-    public void addStop(int stop) {
-        if(stop > currentFloor) {
-            stops.setFrontOfQueueToLowest();
-        } else  if(stop < currentFloor){
-            stops.setFrontOfQueueToHighest();
-        }
-        stops.insert(stop);
-    }
-
+    //Assumes that stops will be in line with the elevator's current direction and position.
+    //We'll have to design a better way to accomplish this later.
+    //Cowboy coding, weeeeee!
     public void addStop(ElevatorCall call) {
-        addStop(call.getCallingFloor());
+        if(call.getDirection() != this.getDirection()
+                && this.getDirection() != STOPPED
+                && !this.isIdle()) {
+            //error case. This was an invalid assignment of a call.
+            //TODO: Handle this better.
+            System.err.println("Bad call for elevator " + elevatorId);
+            return;
+        }
+
+        stops.insert(call.getCallingFloor());
         stops.insert(call.getDestinationFloor());
+
+        Direction elevatorDirection = this.getDirection();
+        switch(elevatorDirection) {
+            case UP:
+                stops.setFrontOfQueueToLowest();
+                break;
+            case DOWN:
+                stops.setFrontOfQueueToHighest();
+                break;
+            case STOPPED:
+                if(isIdle()) {
+                    if(call.getDirection() == UP) {
+                        stops.setFrontOfQueueToLowest();
+                    } else if(call.getDirection() == DOWN) {
+                        stops.setFrontOfQueueToHighest();
+                    } else {
+                        //What do we do here? Calls shouldn't be STOPPED.
+                    }
+                    //nextStop = call.getCallingFloor();
+                }
+        }
     }
 
     public boolean stoppingAt(int stop) {
@@ -86,12 +107,12 @@ public class Elevator implements Actionable {
     }
 
     public Direction getDirection() {
-        if(nextStop > currentFloor) {
-            return UP;
-        } else if(nextStop < currentFloor) {
-            return DOWN;
-        } else {
+        if(nextStop < 0 || nextStop == currentFloor) {
             return STOPPED;
+        } else if(nextStop > currentFloor) {
+            return UP;
+        } else { //if(nextStop < currentFloor) {
+            return DOWN;
         }
     }
 
@@ -136,8 +157,9 @@ public class Elevator implements Actionable {
     private void updateStops() {
         if(stops.peek() == currentFloor) {
             stops.pop();
-            nextStop = isIdle() ? 0 : stops.peek();
         }
+
+        nextStop = isIdle() ? -1 : stops.peek();
     }
 
     private void moveElevator() {

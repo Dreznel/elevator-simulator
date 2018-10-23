@@ -22,7 +22,8 @@ public class Main {
 
         try {
             List<Actionable> passenger;
-            eventList.set(5, getPassengerAsList(1, 29));
+            eventList.set(0, getPassengerAsList(1, 29));
+            eventList.set(5, getPassengerAsList(24, 29));
             eventList.set(10, getPassengerAsList(28, 1));
             eventList.set(15, getPassengerAsList(2, 10));
             eventList.set(20, getPassengerAsList(7, 10));
