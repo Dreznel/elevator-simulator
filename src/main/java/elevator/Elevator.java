@@ -1,6 +1,6 @@
 package elevator;
 
-import Utility.OrderedSetQueue;
+import utility.OrderedSetQueue;
 import operation.ElevatorManager;
 import contracts.Actionable;
 import passenger.Passenger;
@@ -50,12 +50,13 @@ public class Elevator implements Actionable {
         }
 
         if(getDirection() == STOPPED) {
-            dropOffPassengers();
+            //dropOffPassengers();
             //TODO: Add passengers -- but how do I pass in the argument?
             updateStops();
         } else {
             moveElevator();
         }
+
         return true; //I may take out the boolean return, it could be helpful for exception handling/fault-tolerance, though.
     }
 
@@ -73,6 +74,11 @@ public class Elevator implements Actionable {
             stops.setFrontOfQueueToHighest();
         }
         stops.insert(stop);
+    }
+
+    public void addStop(ElevatorCall call) {
+        addStop(call.getCallingFloor());
+        stops.insert(call.getDestinationFloor());
     }
 
     public boolean stoppingAt(int stop) {
@@ -100,7 +106,7 @@ public class Elevator implements Actionable {
     }
 
     public boolean isIdle() {
-        return stops.peek() != null;
+        return stops.peek() == -1;
     }
 
     public int getCurrentCapacity() {
@@ -127,31 +133,6 @@ public class Elevator implements Actionable {
         return passengers.remove(p);
     }
 
-    //TODO: Try to do this with lambdas. Also, fix this inefficient mess.
-    private void dropOffPassengers() {
-        List<Passenger> remainingPassengers = new ArrayList<Passenger>();
-        for(Passenger passenger : passengers) {
-            if( ! passenger.isDeparting(this.currentFloor)) {
-                remainingPassengers.add(passenger);
-            }
-        }
-        this.passengers = remainingPassengers;
-    }
-
-    /*
-    //Adds members of newPassengers into passengerList and returns those who would not fit.
-    private List<Passenger> addPassengers(List<Passenger> newPassengers) {
-        for(int i=0; i<newPassengers.size(); i++) {
-            if(getCurrentCapacity() < maxCapacity) {
-                this.passengers.insert(newPassengers.get(i));
-            } else {
-                return newPassengers.subList(i, newPassengers.size());
-            }
-        }
-        return null;
-    }
-    */
-
     private void updateStops() {
         if(stops.peek() == currentFloor) {
             stops.pop();
@@ -165,7 +146,7 @@ public class Elevator implements Actionable {
         } else if(getDirection() == DOWN) {
             currentFloor--;
         }
-        System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
+        //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
 
 

@@ -15,7 +15,7 @@ public class Main {
 
         List<List<Actionable>> eventList;
         eventList = new ArrayList<List<Actionable>>(150);
-        for(int i=0; i<150; i++) {
+        for(int i=0; i<80; i++) {
             eventList.add(new ArrayList<Actionable>());
         }
 

@@ -24,4 +24,14 @@ public class ElevatorSystemImpl implements ElevatorSystem {
     public void transportPassenger(Passenger p) {
         manager.processElevatorCall(p);
     }
+
+    @Override
+    public boolean doNextAction() {
+        return manager.doNextAction();
+    }
+
+    @Override
+    public boolean setNextAction() {
+        return manager.setNextAction();
+    }
 }

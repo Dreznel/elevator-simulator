@@ -1,5 +1,6 @@
 package operation;
 
+import contracts.Actionable;
 import contracts.Cost;
 import contracts.CostCalculator;
 import elevator.Elevator;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Queue;
 
 //Class to give commands to all of the elevators.
-public class ElevatorManager {
+public class ElevatorManager implements Actionable {
 
     private Map<String, Elevator> elevators;
     private CostCalculator costCalculator;
@@ -25,7 +26,7 @@ public class ElevatorManager {
 
         //Make four elevators.
         for(int i=1; i<=4; i++) {
-            String name = "Elevator" + Integer.toString(i);
+            String name = "E[" + Integer.toString(i) + "]";
             Elevator e = new Elevator(name);
             elevators.put(name, e);
         }
@@ -33,6 +34,23 @@ public class ElevatorManager {
         costCalculator = new TimeToBoardCostCalculator();
         pendingCalls = new LinkedList<ElevatorCall>();
         pendingPassengers = new LinkedList<Passenger>();
+    }
+
+    @Override
+    public boolean doNextAction() {
+        for(Elevator e : elevators.values()) {
+            e.doNextAction();
+        }
+        printDiagram();
+        return true;
+    }
+
+    @Override
+    public boolean setNextAction() {
+        for(Elevator e : elevators.values()) {
+            e.setNextAction();
+        }
+        return true;
     }
 
     //Method should receive a passenger and assign that passenger an elevator if possible.
@@ -46,8 +64,9 @@ public class ElevatorManager {
             return;
         }
 
-        selectedElevator.addStop(p.getElevatorCall().getCallingFloor());
-        selectedElevator.addStop(p.getElevatorCall().getDestinationFloor());
+        //selectedElevator.addStop(p.getElevatorCall().getCallingFloor());
+        //selectedElevator.addStop(p.getElevatorCall().getDestinationFloor());
+        selectedElevator.addStop(p.getElevatorCall());
         p.assignElevator(selectedElevator);
     }
 
@@ -69,6 +88,24 @@ public class ElevatorManager {
         }
         return selectedElevator;
     }
+
+    private void printDiagram() {
+        System.out.println("###\t\t\t\t\t\t\t###");
+        for(int i=0; i<30; i++) {
+            System.out.print(i + ":\t");
+            for(Elevator e : elevators.values()) {
+                if(e.getCurrentFloor() == i) {
+                    System.out.printf("%5s\t", e.getElevatorId());
+                } else {
+                    System.out.printf("%5s\t", "___");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println("###\t\t\t\t\t\t\t###");
+    }
+
+
 /*
     //Method should receive a call and either assign it to an elevator or kick off the process
     //that assigns it to an elevator.

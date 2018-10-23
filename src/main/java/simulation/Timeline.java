@@ -1,6 +1,7 @@
 package simulation;
 
 import contracts.Actionable;
+import elevator.ElevatorSystemImpl;
 
 import java.util.List;
 
@@ -16,9 +17,11 @@ public class Timeline {
     public void advanceTimeline() {
 
         System.out.println("\n\nAdvancing timeline. Current time: " + Integer.toString((currentTime)));
+        ElevatorSystemImpl.getInstance().doNextAction();
 
         List<Actionable> currentEvents = eventMatrix.get(currentTime);
         for(Actionable event : currentEvents) {
+            //System.out.println("\n\nDoing actions for current time: " + Integer.toString(currentTime));
             event.doNextAction();
             event.setNextAction();
         }

@@ -1,6 +1,5 @@
-package Utility;
+package utility;
 
-import java.util.Queue;
 import java.util.TreeSet;
 
 public class OrderedSetQueue {
@@ -9,6 +8,7 @@ public class OrderedSetQueue {
 
     public OrderedSetQueue() {
         set = new TreeSet<Integer>();
+        frontOfQueueIsHighestValue = false;
     }
 
     public void insert(Integer i) {
@@ -21,27 +21,27 @@ public class OrderedSetQueue {
 
     public Integer pop() {
         if(set.isEmpty()) {
-            return null;
+            return -1;
         }
 
         Integer returnValue;
-        returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
+        returnValue = frontOfQueueIsHighestValue ? set.last() : set.first();
         set.remove(returnValue);
         return returnValue;
     }
 
     public Integer peek() {
         if(set.isEmpty()) {
-            return null;
+            return -1;
         }
 
         Integer returnValue;
-        returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
+        returnValue = frontOfQueueIsHighestValue ? set.last() : set.first();
         return returnValue;
     }
 
     public boolean hasNext() {
-        return peek() != null;
+        return peek() != -1;
     }
 
     //Purely adding because I want to use this to practice stream api. This is not good design.
