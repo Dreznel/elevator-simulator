@@ -1,6 +1,9 @@
 package utility;
 
+import elevator.Direction;
+
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class OrderedSetQueue {
     private TreeSet<Integer> set;
@@ -38,6 +41,10 @@ public class OrderedSetQueue {
         Integer returnValue;
         returnValue = frontOfQueueIsHighestValue ? set.last() : set.first();
         return returnValue;
+    }
+
+    public Integer peekAbove(int currentFloor) {
+        return set.stream().filter(floor -> floor < currentFloor).collect()
     }
 
     public boolean hasNext() {

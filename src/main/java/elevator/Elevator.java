@@ -20,6 +20,7 @@ public class Elevator implements Actionable {
 
     private int currentFloor;
     private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
+    private OrderedSetQueue pickups;
     private int nextStop;
 
     private boolean doorsOpen;
@@ -61,9 +62,15 @@ public class Elevator implements Actionable {
 
     @Override
     public boolean setNextAction() {
+        nextStop = stops.peek();
         return false;
     }
 
+    public void ingestElevatorCall(ElevatorCall call) {
+        //
+    }
+
+    /*
     //Assumes that stops will be in line with the elevator's current direction and position.
     //We'll have to design a better way to accomplish this later.
     //Cowboy coding, weeeeee!
@@ -103,6 +110,7 @@ public class Elevator implements Actionable {
                 }
         }
     }
+    */
 
     public boolean stoppingAt(int stop) {
         return stops.contains(stop);

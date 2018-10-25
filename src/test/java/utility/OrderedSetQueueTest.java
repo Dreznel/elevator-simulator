@@ -87,6 +87,11 @@ class OrderedSetQueueTest {
     }
 
     @Test
+    void peekSubsetLower() {
+        int expected = 3;
+    }
+
+    @Test
     void hasNext() {
         assertTrue(fixture.hasNext());
     }
