@@ -35,7 +35,7 @@ public class Passenger implements Actionable {
                 assignedElevator.departPassenger(this);
                 printFinished();
                 isArrived = true;
-        } else if(isElevatorHere()) {
+        } else if(!isBoarded && isElevatorHere()) {
                 isBoarded = assignedElevator.boardPassenger(this);
                 wasSkipped = !isBoarded;
         }
