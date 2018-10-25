@@ -43,9 +43,11 @@ public class OrderedSetQueue {
         return returnValue;
     }
 
+    /*
     public Integer peekAbove(int currentFloor) {
         return set.stream().filter(floor -> floor < currentFloor).collect()
     }
+    */
 
     public boolean hasNext() {
         return peek() != -1;

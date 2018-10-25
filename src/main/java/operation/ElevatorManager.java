@@ -66,7 +66,7 @@ public class ElevatorManager implements Actionable {
 
         //selectedElevator.addStop(p.getElevatorCall().getCallingFloor());
         //selectedElevator.addStop(p.getElevatorCall().getDestinationFloor());
-        selectedElevator.addStop(p.getElevatorCall());
+        selectedElevator.ingestElevatorCall(p.getElevatorCall());
         p.assignElevator(selectedElevator);
     }
 

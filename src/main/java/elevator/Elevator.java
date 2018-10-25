@@ -19,11 +19,12 @@ public class Elevator implements Actionable {
     private List<Passenger> passengers;
 
     private int currentFloor;
+    private Direction calledDirection;
     private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
-    private OrderedSetQueue pickups;
     private int nextStop;
 
-    private boolean doorsOpen;
+
+
 
     public Elevator(String id) {
         elevatorId = id;
@@ -35,8 +36,6 @@ public class Elevator implements Actionable {
         stops = new OrderedSetQueue();
         stops.setFrontOfQueueToHighest();
         nextStop = -1;
-
-        doorsOpen = false;
     }
 
     public String getElevatorId() {
@@ -49,7 +48,7 @@ public class Elevator implements Actionable {
             return false;
         }
 
-        if(getDirection() == STOPPED) {
+        if(nextStop == currentFloor) {
             //dropOffPassengers();
             //addPassengers();
             updateStops();
@@ -62,68 +61,33 @@ public class Elevator implements Actionable {
 
     @Override
     public boolean setNextAction() {
+        if(isIdle()) {
+            calledDirection = STOPPED;
+        }
         nextStop = stops.peek();
+        updateDirection();
         return false;
     }
 
     public void ingestElevatorCall(ElevatorCall call) {
-        //
-    }
-
-    /*
-    //Assumes that stops will be in line with the elevator's current direction and position.
-    //We'll have to design a better way to accomplish this later.
-    //Cowboy coding, weeeeee!
-    public void addStop(ElevatorCall call) {
-
-        //Weed out bad calls.
-        if(call.getDirection() != this.getDirection()
-                && this.getDirection() != STOPPED
-                && !this.isIdle()) {
-            //error case. This was an invalid assignment of a call.
-            //TODO: Handle this better.
-            System.err.println("Bad call for elevator " + elevatorId);
+        if(isIdle()) {
+            this.calledDirection = call.getDirection();
+        } else if(call.getDirection() != this.getDirection()) {
+            System.err.println("Elevator called with wrong direction: " + elevatorId);
             return;
         }
 
         stops.insert(call.getCallingFloor());
         stops.insert(call.getDestinationFloor());
-
-        Direction elevatorDirection = this.getDirection();
-        switch(elevatorDirection) {
-            case UP:
-                stops.setFrontOfQueueToLowest();
-                break;
-            case DOWN:
-                stops.setFrontOfQueueToHighest();
-                break;
-            case STOPPED:
-                if(isIdle()) {
-                    if(call.getDirection() == UP) {
-                        stops.setFrontOfQueueToLowest();
-                    } else if(call.getDirection() == DOWN) {
-                        stops.setFrontOfQueueToHighest();
-                    } else {
-                        //What do we do here? Calls shouldn't be STOPPED. TODO
-                    }
-                    //nextStop = call.getCallingFloor();
-                }
-        }
+        setQueueDirection();
     }
-    */
 
     public boolean stoppingAt(int stop) {
         return stops.contains(stop);
     }
 
     public Direction getDirection() {
-        if(nextStop < 0 || nextStop == currentFloor) {
-            return STOPPED;
-        } else if(nextStop > currentFloor) {
-            return UP;
-        } else { //if(nextStop < currentFloor) {
-            return DOWN;
-        }
+        return this.calledDirection;
     }
 
     //Not a really good way to do this, but I wanted to practice stream api.
@@ -164,6 +128,24 @@ public class Elevator implements Actionable {
         return passengers.remove(p);
     }
 
+    private void setQueueDirection() {
+        if(calledDirection == UP) {
+            stops.setFrontOfQueueToLowest();
+        } else if(calledDirection == DOWN) {
+            stops.setFrontOfQueueToHighest();
+        } else {
+            System.err.println("Error: can't set queue direction on stopped elevator. How did this happen?");
+        }
+    }
+
+    private void updateDirection() {
+        if(nextStop < currentFloor) {
+            calledDirection = DOWN;
+        } else {
+            calledDirection = UP;
+        }
+    }
+
     private void updateStops() {
         if(stops.peek() == currentFloor) {
             stops.pop();
@@ -173,13 +155,15 @@ public class Elevator implements Actionable {
     }
 
     private void moveElevator() {
-        if(getDirection() == UP) {
+        if(currentFloor < nextStop) {
             currentFloor++;
-        } else if(getDirection() == DOWN) {
+        } else if(currentFloor > nextStop) {
             currentFloor--;
         }
         //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
+
+
 
 
 
