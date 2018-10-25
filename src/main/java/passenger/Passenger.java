@@ -14,12 +14,14 @@ public class Passenger implements Actionable {
     private Elevator assignedElevator;
     private boolean isBoarded;
     private boolean wasSkipped;
+    private boolean isArrived;
 
     public Passenger(int startingFloor, int destinationFloor) throws Exception {
         this.name = "Employee " + UUID.randomUUID().toString();;
         this.elevatorCall = new ElevatorCall(startingFloor, destinationFloor);
         isBoarded = false;
         wasSkipped = false;
+        isArrived = false;
     }
 
     //private int startingFloor;
@@ -31,7 +33,8 @@ public class Passenger implements Actionable {
             wasSkipped = false;
         } else if(isBoarded && isDeparting()) {
                 assignedElevator.departPassenger(this);
-                System.out.println("Passenger " + name + " has arrived.");
+                printFinished();
+                isArrived = true;
         } else if(isElevatorHere()) {
                 isBoarded = assignedElevator.boardPassenger(this);
                 wasSkipped = !isBoarded;
@@ -98,6 +101,8 @@ public class Passenger implements Actionable {
         return name;
     }
 
+    public String getSmallName() { return name.substring(9, 13); }
+
     public ElevatorCall getElevatorCall() {
         return elevatorCall;
     }
@@ -114,6 +119,18 @@ public class Passenger implements Actionable {
             return false;
         }
         return elevatorCall.getCallingFloor() == assignedElevator.getCurrentFloor();
+    }
+
+    private void printFinished() {
+        if(!isArrived) {
+            System.out.println("Passenger " + getSmallName() + " has arrived.");
+            System.out.printf("Passenger traveled from floor %d to floor %d via Elevator %s.\n",
+                    elevatorCall.getCallingFloor(),
+                    elevatorCall.getDestinationFloor(),
+                    assignedElevator.getElevatorId()
+            )
+            ;
+        };
     }
 
 

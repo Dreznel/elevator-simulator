@@ -95,7 +95,7 @@ public class ElevatorManager implements Actionable {
             System.out.print(i + ":\t");
             for(Elevator e : elevators.values()) {
                 if(e.getCurrentFloor() == i) {
-                    System.out.printf("%5s\t", e.getElevatorId());
+                    System.out.printf("%5s%2d\t", e.getElevatorId(), e.getCurrentCapacity());
                 } else {
                     System.out.printf("%5s\t", "___");
                 }

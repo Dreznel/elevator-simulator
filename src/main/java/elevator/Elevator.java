@@ -23,9 +23,6 @@ public class Elevator implements Actionable {
     private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
     private int nextStop;
 
-
-
-
     public Elevator(String id) {
         elevatorId = id;
 
@@ -106,10 +103,6 @@ public class Elevator implements Actionable {
 
     public int getCurrentCapacity() {
         return passengers.size();
-    }
-
-    public boolean hasPassengers() {
-        return getCurrentCapacity() > 0;
     }
 
     public int getCurrentFloor() {
