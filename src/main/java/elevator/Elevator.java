@@ -68,6 +68,8 @@ public class Elevator implements Actionable {
     //We'll have to design a better way to accomplish this later.
     //Cowboy coding, weeeeee!
     public void addStop(ElevatorCall call) {
+
+        //Weed out bad calls.
         if(call.getDirection() != this.getDirection()
                 && this.getDirection() != STOPPED
                 && !this.isIdle()) {
@@ -95,7 +97,7 @@ public class Elevator implements Actionable {
                     } else if(call.getDirection() == DOWN) {
                         stops.setFrontOfQueueToHighest();
                     } else {
-                        //What do we do here? Calls shouldn't be STOPPED.
+                        //What do we do here? Calls shouldn't be STOPPED. TODO
                     }
                     //nextStop = call.getCallingFloor();
                 }
