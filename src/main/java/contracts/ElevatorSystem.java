@@ -1,7 +1,7 @@
-package elevator;
+package contracts;
 
 import passenger.Passenger;
 
-public interface ElevatorSystem {
+public interface ElevatorSystem extends Actionable {
     public void transportPassenger(Passenger p);
 }

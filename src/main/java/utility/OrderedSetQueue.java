@@ -1,7 +1,9 @@
-package Utility;
+package utility;
 
-import java.util.Queue;
+import elevator.Direction;
+
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class OrderedSetQueue {
     private TreeSet<Integer> set;
@@ -9,6 +11,7 @@ public class OrderedSetQueue {
 
     public OrderedSetQueue() {
         set = new TreeSet<Integer>();
+        frontOfQueueIsHighestValue = false;
     }
 
     public void insert(Integer i) {
@@ -20,20 +23,34 @@ public class OrderedSetQueue {
     }
 
     public Integer pop() {
+        if(set.isEmpty()) {
+            return -1;
+        }
+
         Integer returnValue;
-        returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
+        returnValue = frontOfQueueIsHighestValue ? set.last() : set.first();
         set.remove(returnValue);
         return returnValue;
     }
 
     public Integer peek() {
+        if(set.isEmpty()) {
+            return -1;
+        }
+
         Integer returnValue;
-        returnValue = frontOfQueueIsHighestValue ? set.first() : set.last();
+        returnValue = frontOfQueueIsHighestValue ? set.last() : set.first();
         return returnValue;
     }
 
+    /*
+    public Integer peekAbove(int currentFloor) {
+        return set.stream().filter(floor -> floor < currentFloor).collect()
+    }
+    */
+
     public boolean hasNext() {
-        return peek() != null;
+        return peek() != -1;
     }
 
     //Purely adding because I want to use this to practice stream api. This is not good design.

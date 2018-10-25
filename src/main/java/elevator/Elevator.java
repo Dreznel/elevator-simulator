@@ -1,6 +1,6 @@
 package elevator;
 
-import Utility.OrderedSetQueue;
+import utility.OrderedSetQueue;
 import operation.ElevatorManager;
 import contracts.Actionable;
 import passenger.Passenger;
@@ -14,16 +14,14 @@ import static elevator.Direction.STOPPED;
 public class Elevator implements Actionable {
 
     private String elevatorId;
-    private ElevatorManager manager;
 
     private int maxCapacity;
     private List<Passenger> passengers;
 
     private int currentFloor;
+    private Direction calledDirection;
     private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
     private int nextStop;
-
-    private boolean doorsOpen;
 
     public Elevator(String id) {
         elevatorId = id;
@@ -34,9 +32,7 @@ public class Elevator implements Actionable {
         currentFloor = 15; //Assume a thirty-floor building.
         stops = new OrderedSetQueue();
         stops.setFrontOfQueueToHighest();
-        nextStop = 0;
-
-        doorsOpen = false;
+        nextStop = -1;
     }
 
     public String getElevatorId() {
@@ -49,30 +45,38 @@ public class Elevator implements Actionable {
             return false;
         }
 
-        if(getDirection() == STOPPED) {
-            dropOffPassengers();
-            //TODO: Add passengers -- but how do I pass in the argument?
+        if(nextStop == currentFloor) {
+            //dropOffPassengers();
+            //addPassengers();
             updateStops();
         } else {
             moveElevator();
         }
+
         return true; //I may take out the boolean return, it could be helpful for exception handling/fault-tolerance, though.
     }
 
     @Override
     public boolean setNextAction() {
+        if(isIdle()) {
+            calledDirection = STOPPED;
+        }
+        nextStop = stops.peek();
+        updateDirection();
         return false;
     }
 
-    //This needs to be fixed but we'll get there.
-    //As it stands, the elevator can't be assigned stops that aren't in line with it's current direction.
-    public void addStop(int stop) {
-        if(stop > currentFloor) {
-            stops.setFrontOfQueueToLowest();
-        } else  if(stop < currentFloor){
-            stops.setFrontOfQueueToHighest();
+    public void ingestElevatorCall(ElevatorCall call) {
+        if(isIdle()) {
+            this.calledDirection = call.getDirection();
+        } else if(call.getDirection() != this.getDirection()) {
+            System.err.println("Elevator called with wrong direction: " + elevatorId);
+            return;
         }
-        stops.insert(stop);
+
+        stops.insert(call.getCallingFloor());
+        stops.insert(call.getDestinationFloor());
+        setQueueDirection();
     }
 
     public boolean stoppingAt(int stop) {
@@ -80,13 +84,7 @@ public class Elevator implements Actionable {
     }
 
     public Direction getDirection() {
-        if(nextStop > currentFloor) {
-            return UP;
-        } else if(nextStop < currentFloor) {
-            return DOWN;
-        } else {
-            return STOPPED;
-        }
+        return this.calledDirection;
     }
 
     //Not a really good way to do this, but I wanted to practice stream api.
@@ -100,62 +98,65 @@ public class Elevator implements Actionable {
     }
 
     public boolean isIdle() {
-        return stops.peek() != null;
+        return stops.peek() == -1;
     }
 
     public int getCurrentCapacity() {
         return passengers.size();
     }
 
-    public boolean hasPassengers() {
-        return getCurrentCapacity() > 0;
-    }
-
     public int getCurrentFloor() {
         return currentFloor;
     }
 
-
-    //TODO: Try to do this with lambdas. Also, fix this inefficient mess.
-    private void dropOffPassengers() {
-        List<Passenger> remainingPassengers = new ArrayList<Passenger>();
-        for(Passenger passenger : passengers) {
-            if( ! passenger.isDeparting(this.currentFloor)) {
-                remainingPassengers.add(passenger);
-            }
+    public boolean boardPassenger(Passenger p) {
+        if(this.getCurrentCapacity() < this.maxCapacity) {
+            passengers.add(p);
+            return true;
         }
-        this.passengers = remainingPassengers;
+        return false;
     }
 
-    /*
-    //Adds members of newPassengers into passengerList and returns those who would not fit.
-    private List<Passenger> addPassengers(List<Passenger> newPassengers) {
-        for(int i=0; i<newPassengers.size(); i++) {
-            if(getCurrentCapacity() < maxCapacity) {
-                this.passengers.insert(newPassengers.get(i));
-            } else {
-                return newPassengers.subList(i, newPassengers.size());
-            }
-        }
-        return null;
+    public boolean departPassenger(Passenger p) {
+        return passengers.remove(p);
     }
-    */
+
+    private void setQueueDirection() {
+        if(calledDirection == UP) {
+            stops.setFrontOfQueueToLowest();
+        } else if(calledDirection == DOWN) {
+            stops.setFrontOfQueueToHighest();
+        } else {
+            System.err.println("Error: can't set queue direction on stopped elevator. How did this happen?");
+        }
+    }
+
+    private void updateDirection() {
+        if(nextStop < currentFloor) {
+            calledDirection = DOWN;
+        } else {
+            calledDirection = UP;
+        }
+    }
 
     private void updateStops() {
         if(stops.peek() == currentFloor) {
             stops.pop();
-            nextStop = isIdle() ? 0 : stops.peek();
         }
+
+        nextStop = isIdle() ? -1 : stops.peek();
     }
 
     private void moveElevator() {
-        if(getDirection() == UP) {
+        if(currentFloor < nextStop) {
             currentFloor++;
-        } else if(getDirection() == DOWN) {
+        } else if(currentFloor > nextStop) {
             currentFloor--;
         }
-        System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
+        //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
+
+
 
 
 
