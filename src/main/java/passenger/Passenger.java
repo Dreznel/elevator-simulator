@@ -1,10 +1,9 @@
 package passenger;
 
 import contracts.Actionable;
-import elevator.Direction;
 import elevator.Elevator;
 import elevator.ElevatorCall;
-import elevator.ElevatorSystemImpl;
+import operation.ElevatorSystemImpl;
 
 import java.util.UUID;
 

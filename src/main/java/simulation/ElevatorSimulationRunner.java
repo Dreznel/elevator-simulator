@@ -1,8 +1,6 @@
 package simulation;
 
-import contracts.ElevatorSystem;
 import contracts.SimulationRunner;
-import elevator.ElevatorSystemImpl;
 
 public class ElevatorSimulationRunner implements SimulationRunner {
     @Override

@@ -1,7 +1,6 @@
-package elevator;
+package operation;
 
 import contracts.ElevatorSystem;
-import operation.ElevatorManager;
 import passenger.Passenger;
 
 public class ElevatorSystemImpl implements ElevatorSystem {

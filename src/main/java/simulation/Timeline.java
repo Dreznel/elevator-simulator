@@ -1,8 +1,7 @@
 package simulation;
 
 import contracts.Actionable;
-import contracts.ElevatorSystem;
-import elevator.ElevatorSystemImpl;
+import operation.ElevatorSystemImpl;
 import passenger.Passenger;
 
 import java.util.LinkedList;
