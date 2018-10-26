@@ -38,9 +38,11 @@ public class ElevatorManager implements Actionable {
     @Override
     public boolean doNextAction() {
 
+        /*
         if(!pendingPassengers.isEmpty()) {
             tryPendingPassengersAgain();
         }
+        */
 
         for(Elevator e : elevators.values()) {
             e.doNextAction();
