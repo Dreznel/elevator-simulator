@@ -1,7 +1,6 @@
 package elevator;
 
 import utility.OrderedSetQueue;
-import operation.ElevatorManager;
 import contracts.Actionable;
 import passenger.Passenger;
 

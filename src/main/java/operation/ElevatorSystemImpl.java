@@ -3,12 +3,16 @@ package operation;
 import contracts.ElevatorSystem;
 import passenger.Passenger;
 
+/*
+    Abstraction of the layer that handles Passenger requests to the elevator manager.
+    Uses a singleton implementation for simplicity.
+ */
 public class ElevatorSystemImpl implements ElevatorSystem {
     private static ElevatorSystemImpl instance;
     private ElevatorManager manager;
 
     private ElevatorSystemImpl() {
-        this.manager = new ElevatorManager();
+        this.manager = new ElevatorManager(4);
     }
 
     public static ElevatorSystem getInstance() {
