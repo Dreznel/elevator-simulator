@@ -22,8 +22,7 @@ public class Elevator implements Actionable {
     private OrderedSetQueue stops;
     private int nextStop;
 
-    private int totalUpMoves;
-    private int totalDownMoves;
+    private ElevatorStatistics stats;
 
     public Elevator(String id) {
         elevatorId = id;
@@ -36,8 +35,7 @@ public class Elevator implements Actionable {
         stops.setFrontOfQueueToHighest();
         nextStop = -1;
 
-        totalUpMoves = 0;
-        totalDownMoves = 0;
+        stats = new ElevatorStatistics(elevatorId, currentFloor);
     }
 
     ///////////////////////
@@ -114,6 +112,13 @@ public class Elevator implements Actionable {
         return passengers.remove(p);
     }
 
+    public ElevatorStatistics getElevatorStatistics() {
+        stats.setFinalFloor(currentFloor);
+        stats.setRemainingPassengers(passengers.size());
+        stats.setRemainingStops(stops.size());
+        return stats;
+    }
+
     /////////////////////////
     // Internal Operations //
     /////////////////////////
@@ -138,7 +143,7 @@ public class Elevator implements Actionable {
 
     private void updateStops() {
         if(stops.peek() == currentFloor) {
-            stops.pop();
+            stats.addStopToHistory(stops.pop());
         }
 
         nextStop = isIdle() ? -1 : stops.peek();
@@ -147,10 +152,10 @@ public class Elevator implements Actionable {
     private void moveElevator() {
         if(currentFloor < nextStop) {
             currentFloor++;
-            totalUpMoves++;
+            stats.incrementUpMoves();
         } else if(currentFloor > nextStop) {
             currentFloor--;
-            totalDownMoves++;
+            stats.incrementDownMoves();
         }
         //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
@@ -173,13 +178,5 @@ public class Elevator implements Actionable {
 
     public int getCurrentFloor() {
         return currentFloor;
-    }
-
-    public int getTotalUpMoves() {
-        return totalUpMoves;
-    }
-
-    public int getTotalDownMoves() {
-        return getTotalDownMoves();
     }
 }

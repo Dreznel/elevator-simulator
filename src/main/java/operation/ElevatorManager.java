@@ -5,12 +5,11 @@ import contracts.Cost;
 import contracts.CostCalculator;
 import elevator.Elevator;
 import elevator.ElevatorCall;
+import elevator.ElevatorStatistics;
 import passenger.Passenger;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /*
     Class to manage the efficient assignment and tracking of elevators.
@@ -75,12 +74,8 @@ public class ElevatorManager implements Actionable {
         p.assignElevator(selectedElevator);
     }
 
-    private void tryPendingPassengersAgain() {
-        Queue<Passenger> currentQueue = pendingPassengers;
-        pendingPassengers = new LinkedList<>();
-        for(Passenger p : currentQueue) {
-            processElevatorCall(p);
-        }
+    public List<ElevatorStatistics> getElevatorStatistics() {
+        return elevators.values().stream().map(Elevator::getElevatorStatistics).collect(Collectors.toList());
     }
 
     private Elevator getCheapestElevator(ElevatorCall call) {
@@ -104,7 +99,7 @@ public class ElevatorManager implements Actionable {
 
     private void printDiagram() {
         System.out.println("###\t\t\t\t\t\t\t###");
-        for(int i=0; i<30; i++) {
+        for(int i=29; i>=0; i--) {
             System.out.print(i + ":\t");
             for(Elevator e : elevators.values()) {
                 if(e.getCurrentFloor() == i) {

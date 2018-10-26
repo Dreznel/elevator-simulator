@@ -1,6 +1,5 @@
 package simulation;
 
-import contracts.Actionable;
 import operation.ElevatorSystemImpl;
 import passenger.Passenger;
 
@@ -31,6 +30,10 @@ public class Timeline {
         return currentTime < passengerEventMatrix.size();
     }
 
+    public List<Passenger> getMasterPassengerList() {
+        return masterPassengerList;
+    }
+
     public void advanceTimeline() {
 
         System.out.println("\n\nAdvancing timeline. Current time: " + Integer.toString((currentTime)));
@@ -38,30 +41,29 @@ public class Timeline {
         //Advance elevators.
         ElevatorSystemImpl.getInstance().doNextAction();
 
-        advancePreviousPassengers();
+        //Process new passengers.
+        assimilateNewPassengers(passengerEventMatrix.get(currentTime));
 
-        List<Passenger> newPassengers = passengerEventMatrix.get(currentTime);
-
-        for(Passenger newPassenger : newPassengers) {
-            newPassenger.doNextAction();
-            newPassenger.setNextAction();
-
-            masterPassengerList.add(newPassenger);
-
-        }
+        //Advance Passengers.
+        advancePassengers();
 
         //Run any next-setup actions for elevators.
         ElevatorSystemImpl.getInstance().setNextAction();
 
+        //Increment time.
         currentTime++;
     }
 
-    private void advancePreviousPassengers() {
+    private void assimilateNewPassengers(List<Passenger> newPassengers) {
+        for(Passenger newPassenger : newPassengers) {
+            masterPassengerList.add(newPassenger);
+        }
+    }
+
+    private void advancePassengers() {
         for(Passenger passenger : masterPassengerList) {
             passenger.doNextAction();
             passenger.setNextAction();
         }
     }
-
-
 }

@@ -1,7 +1,10 @@
 package operation;
 
 import contracts.ElevatorSystem;
+import elevator.ElevatorStatistics;
 import passenger.Passenger;
+
+import java.util.List;
 
 /*
     Abstraction of the layer that handles Passenger requests to the elevator manager.
@@ -26,6 +29,11 @@ public class ElevatorSystemImpl implements ElevatorSystem {
     @Override
     public void transportPassenger(Passenger p) {
         manager.processElevatorCall(p);
+    }
+
+    @Override
+    public List<ElevatorStatistics> getElevatorStatistics() {
+        return manager.getElevatorStatistics();
     }
 
     @Override

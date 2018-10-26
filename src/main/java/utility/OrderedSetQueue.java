@@ -22,6 +22,10 @@ public class OrderedSetQueue {
         return set.contains(i);
     }
 
+    public int size() {
+        return set.size();
+    }
+
     public Integer pop() {
         if(set.isEmpty()) {
             return -1;
