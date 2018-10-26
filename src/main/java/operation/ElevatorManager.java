@@ -14,7 +14,7 @@ import java.util.Queue;
 
 /*
     Class to manage the efficient assignment and tracking of elevators.
- */
+*/
 public class ElevatorManager implements Actionable {
 
     private Map<String, Elevator> elevators;

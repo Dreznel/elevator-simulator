@@ -25,8 +25,6 @@ public class Passenger implements Actionable {
         totalTimeToArrival = 0;
     }
 
-    //private int startingFloor;
-    //private int destinationFloor;
     @Override
     public boolean doNextAction() {
         if(assignedElevator == null || wasSkipped) {
@@ -77,15 +75,6 @@ public class Passenger implements Actionable {
         this.assignedElevator = e;
     }
 
-    public void boardElevator() {
-        if(assignedElevator.getCurrentFloor() == elevatorCall.getCallingFloor()) {
-            boolean boarded = assignedElevator.boardPassenger(this);
-            if (!boarded) {
-
-            }
-        }
-    }
-
     public int getTotalTimeToArrival() {
         return totalTimeToArrival;
     }
@@ -94,7 +83,9 @@ public class Passenger implements Actionable {
         return name;
     }
 
-    public String getSmallName() { return name.substring(9, 13); }
+    public String getSmallName() {
+        return name.substring(9, 13);
+    }
 
     public ElevatorCall getElevatorCall() {
         return elevatorCall;
@@ -121,9 +112,8 @@ public class Passenger implements Actionable {
                     elevatorCall.getCallingFloor(),
                     elevatorCall.getDestinationFloor(),
                     assignedElevator.getElevatorId()
-            )
-            ;
-        };
+            );
+        }
     }
 
 
