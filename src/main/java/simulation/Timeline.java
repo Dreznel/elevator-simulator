@@ -1,54 +1,69 @@
 package simulation;
 
-import contracts.Actionable;
-import contracts.ElevatorSystem;
-import elevator.ElevatorSystemImpl;
+import operation.ElevatorSystemImpl;
 import passenger.Passenger;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class Timeline {
-    private List<List<Actionable>> eventMatrix; //This is an array of lists. Each index of the array contains a list of events that happen at that "time-slot".
-    private int currentTime;
-    List<Actionable> passengerMasterList;
+/*
+    Class to process an passengerEventMatrix, which is a jagged Array (or List, in this case)
+    of actionable (passenger) items. The Array is indexed according to the following pattern:
 
-    public Timeline(List<List<Actionable>> events) {
-        this.eventMatrix = events; //TODO: Make this deep-copy the list.
-        int currentTime = 0;
-        passengerMasterList = new LinkedList<>();
+    passengerEventMatrix [time slot] [list of new passengers in that time slot]
+
+    For the purposes of this simulation, the items in the jagged array are all lists of passengers.
+*/
+public class Timeline {
+
+    private List<List<Passenger>> passengerEventMatrix;
+    private int currentTime;
+    private List<Passenger> masterPassengerList;
+
+    public Timeline(List<List<Passenger>> passengerEvents) {
+        passengerEventMatrix = passengerEvents;
+        masterPassengerList = new LinkedList<>();
+        currentTime = 0;
+    }
+
+    public boolean hasNext() {
+        return currentTime < passengerEventMatrix.size();
+    }
+
+    public List<Passenger> getMasterPassengerList() {
+        return masterPassengerList;
     }
 
     public void advanceTimeline() {
 
         System.out.println("\n\nAdvancing timeline. Current time: " + Integer.toString((currentTime)));
+
+        //Advance elevators.
         ElevatorSystemImpl.getInstance().doNextAction();
 
-        List<Actionable> currentEvents = eventMatrix.get(currentTime);
+        //Process new passengers.
+        assimilateNewPassengers(passengerEventMatrix.get(currentTime));
 
-        for(Actionable passenger : passengerMasterList) {
-            passenger.doNextAction();
-            passenger.setNextAction();
-        }
+        //Advance Passengers.
+        advancePassengers();
 
-        for(Actionable event : currentEvents) {
-            //System.out.println("\n\nDoing actions for current time: " + Integer.toString(currentTime));
-            event.doNextAction();
-            event.setNextAction();
-
-            //A little hacky, but this is for testing purposes.
-            if(event instanceof Passenger) {
-                passengerMasterList.add(event);
-            }
-        }
+        //Run any next-setup actions for elevators.
         ElevatorSystemImpl.getInstance().setNextAction();
+
+        //Increment time.
         currentTime++;
     }
 
-    public boolean hasNext() {
-        return currentTime < eventMatrix.size();
+    private void assimilateNewPassengers(List<Passenger> newPassengers) {
+        for(Passenger newPassenger : newPassengers) {
+            masterPassengerList.add(newPassenger);
+        }
     }
 
-    public int getCurrentTime() { return currentTime; }
-    public void setCurrentTime(int time) { this.currentTime = time; }
+    private void advancePassengers() {
+        for(Passenger passenger : masterPassengerList) {
+            passenger.doNextAction();
+            passenger.setNextAction();
+        }
+    }
 }

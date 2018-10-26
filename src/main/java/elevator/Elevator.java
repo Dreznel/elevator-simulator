@@ -1,7 +1,6 @@
 package elevator;
 
 import utility.OrderedSetQueue;
-import operation.ElevatorManager;
 import contracts.Actionable;
 import passenger.Passenger;
 
@@ -20,8 +19,10 @@ public class Elevator implements Actionable {
 
     private int currentFloor;
     private Direction calledDirection;
-    private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
+    private OrderedSetQueue stops;
     private int nextStop;
+
+    private ElevatorStatistics stats;
 
     public Elevator(String id) {
         elevatorId = id;
@@ -33,11 +34,13 @@ public class Elevator implements Actionable {
         stops = new OrderedSetQueue();
         stops.setFrontOfQueueToHighest();
         nextStop = -1;
+
+        stats = new ElevatorStatistics(elevatorId, currentFloor);
     }
 
-    public String getElevatorId() {
-        return elevatorId;
-    }
+    ///////////////////////
+    // Public Operations //
+    ///////////////////////
 
     @Override
     public boolean doNextAction() {
@@ -66,6 +69,14 @@ public class Elevator implements Actionable {
         return false;
     }
 
+    public boolean isIdle() {
+        return stops.peek() == -1;
+    }
+
+    public boolean isStoppingAt(int stop) {
+        return stops.contains(stop);
+    }
+
     public void ingestElevatorCall(ElevatorCall call) {
         if(isIdle()) {
             this.calledDirection = call.getDirection();
@@ -79,14 +90,6 @@ public class Elevator implements Actionable {
         setQueueDirection();
     }
 
-    public boolean stoppingAt(int stop) {
-        return stops.contains(stop);
-    }
-
-    public Direction getDirection() {
-        return this.calledDirection;
-    }
-
     //Not a really good way to do this, but I wanted to practice stream api.
     public int getStopsBeforeFloor(int floor) {
         if(this.getDirection() == DOWN) {
@@ -95,18 +98,6 @@ public class Elevator implements Actionable {
             //For up OR stopped.
             return this.stops.getSetForStreamApi().stream().filter(x -> x < floor).toArray().length;
         }
-    }
-
-    public boolean isIdle() {
-        return stops.peek() == -1;
-    }
-
-    public int getCurrentCapacity() {
-        return passengers.size();
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor;
     }
 
     public boolean boardPassenger(Passenger p) {
@@ -120,6 +111,17 @@ public class Elevator implements Actionable {
     public boolean departPassenger(Passenger p) {
         return passengers.remove(p);
     }
+
+    public ElevatorStatistics getElevatorStatistics() {
+        stats.setFinalFloor(currentFloor);
+        stats.setRemainingPassengers(passengers.size());
+        stats.setRemainingStops(stops.size());
+        return stats;
+    }
+
+    /////////////////////////
+    // Internal Operations //
+    /////////////////////////
 
     private void setQueueDirection() {
         if(calledDirection == UP) {
@@ -141,7 +143,7 @@ public class Elevator implements Actionable {
 
     private void updateStops() {
         if(stops.peek() == currentFloor) {
-            stops.pop();
+            stats.addStopToHistory(stops.pop());
         }
 
         nextStop = isIdle() ? -1 : stops.peek();
@@ -150,14 +152,31 @@ public class Elevator implements Actionable {
     private void moveElevator() {
         if(currentFloor < nextStop) {
             currentFloor++;
+            stats.incrementUpMoves();
         } else if(currentFloor > nextStop) {
             currentFloor--;
+            stats.incrementDownMoves();
         }
         //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
 
 
+    //////////////////
+    //Simple Getters//
+    //////////////////
+    public String getElevatorId() {
+        return elevatorId;
+    }
 
+    public Direction getDirection() {
+        return this.calledDirection;
+    }
 
+    public int getCurrentCapacity() {
+        return passengers.size();
+    }
 
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
 }

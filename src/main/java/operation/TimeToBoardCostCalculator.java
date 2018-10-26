@@ -41,7 +41,7 @@ public class TimeToBoardCostCalculator implements CostCalculator {
     }
 
     private int calculateScore(Elevator e, int callingFloor) {
-        if(e.stoppingAt(callingFloor)) {
+        if(e.isStoppingAt(callingFloor)) {
             return 0;
         }
 
