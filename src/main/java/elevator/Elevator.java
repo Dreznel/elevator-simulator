@@ -20,8 +20,11 @@ public class Elevator implements Actionable {
 
     private int currentFloor;
     private Direction calledDirection;
-    private OrderedSetQueue stops; //TODO: May be a good candidate for dependency injection.
+    private OrderedSetQueue stops;
     private int nextStop;
+
+    private int totalUpMoves;
+    private int totalDownMoves;
 
     public Elevator(String id) {
         elevatorId = id;
@@ -33,11 +36,14 @@ public class Elevator implements Actionable {
         stops = new OrderedSetQueue();
         stops.setFrontOfQueueToHighest();
         nextStop = -1;
+
+        totalUpMoves = 0;
+        totalDownMoves = 0;
     }
 
-    public String getElevatorId() {
-        return elevatorId;
-    }
+    ///////////////////////
+    // Public Operations //
+    ///////////////////////
 
     @Override
     public boolean doNextAction() {
@@ -66,6 +72,14 @@ public class Elevator implements Actionable {
         return false;
     }
 
+    public boolean isIdle() {
+        return stops.peek() == -1;
+    }
+
+    public boolean isStoppingAt(int stop) {
+        return stops.contains(stop);
+    }
+
     public void ingestElevatorCall(ElevatorCall call) {
         if(isIdle()) {
             this.calledDirection = call.getDirection();
@@ -79,14 +93,6 @@ public class Elevator implements Actionable {
         setQueueDirection();
     }
 
-    public boolean stoppingAt(int stop) {
-        return stops.contains(stop);
-    }
-
-    public Direction getDirection() {
-        return this.calledDirection;
-    }
-
     //Not a really good way to do this, but I wanted to practice stream api.
     public int getStopsBeforeFloor(int floor) {
         if(this.getDirection() == DOWN) {
@@ -95,18 +101,6 @@ public class Elevator implements Actionable {
             //For up OR stopped.
             return this.stops.getSetForStreamApi().stream().filter(x -> x < floor).toArray().length;
         }
-    }
-
-    public boolean isIdle() {
-        return stops.peek() == -1;
-    }
-
-    public int getCurrentCapacity() {
-        return passengers.size();
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor;
     }
 
     public boolean boardPassenger(Passenger p) {
@@ -120,6 +114,10 @@ public class Elevator implements Actionable {
     public boolean departPassenger(Passenger p) {
         return passengers.remove(p);
     }
+
+    /////////////////////////
+    // Internal Operations //
+    /////////////////////////
 
     private void setQueueDirection() {
         if(calledDirection == UP) {
@@ -150,14 +148,39 @@ public class Elevator implements Actionable {
     private void moveElevator() {
         if(currentFloor < nextStop) {
             currentFloor++;
+            totalUpMoves++;
         } else if(currentFloor > nextStop) {
             currentFloor--;
+            totalDownMoves++;
         }
         //System.out.println("Elevator " + elevatorId + " moving to floor " + Integer.toString(currentFloor) + ".");
     }
 
 
+    //////////////////
+    //Simple Getters//
+    //////////////////
+    public String getElevatorId() {
+        return elevatorId;
+    }
 
+    public Direction getDirection() {
+        return this.calledDirection;
+    }
 
+    public int getCurrentCapacity() {
+        return passengers.size();
+    }
 
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
+
+    public int getTotalUpMoves() {
+        return totalUpMoves;
+    }
+
+    public int getTotalDownMoves() {
+        return getTotalDownMoves();
+    }
 }

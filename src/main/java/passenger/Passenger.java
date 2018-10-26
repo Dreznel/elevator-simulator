@@ -14,6 +14,7 @@ public class Passenger implements Actionable {
     private boolean isBoarded;
     private boolean wasSkipped;
     private boolean isArrived;
+    private int totalTimeToArrival;
 
     public Passenger(int startingFloor, int destinationFloor) throws Exception {
         this.name = "Employee " + UUID.randomUUID().toString();;
@@ -21,6 +22,7 @@ public class Passenger implements Actionable {
         isBoarded = false;
         wasSkipped = false;
         isArrived = false;
+        totalTimeToArrival = 0;
     }
 
     //private int startingFloor;
@@ -38,6 +40,7 @@ public class Passenger implements Actionable {
                 isBoarded = assignedElevator.boardPassenger(this);
                 wasSkipped = !isBoarded;
         }
+        totalTimeToArrival++;
 
         return true;
     }
@@ -83,17 +86,8 @@ public class Passenger implements Actionable {
         }
     }
 
-    //TODO: delete
-    public boolean isDeparting(int currentFloor) {
-        return elevatorCall.getDestinationFloor() == currentFloor;
-    }
-
-    public boolean getIsBoarded() {
-        return isBoarded;
-    }
-
-    public boolean getWasSkipped() {
-        return wasSkipped;
+    public int getTotalTimeToArrival() {
+        return totalTimeToArrival;
     }
 
     public String getName() {
